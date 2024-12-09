@@ -10,3 +10,10 @@
   }
   @import "./light.css";
 }
+
+.authPage {
+  background-image: url("../public/images/auth/authBackground.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
