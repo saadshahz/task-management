@@ -1,15 +1,17 @@
 import React from "react";
 import { Col, Row } from "antd";
 import TopNav from "@/component/top-nav";
+import Sidebar from "@/component/sidebar";
+
 export default function RootlLayout({ children }) {
   return (
     <Row className="h-screen">
-      <Col span={4} className="bg-[#000000]">
-        col-12
+      <Col span={4} className="">
+        <Sidebar />
       </Col>
-      <Col span={20} className="bg-secondary">
+      <Col span={20} >
         <TopNav />
-        {children}
+        <div className="p-2" >{children}</div>
       </Col>
     </Row>
   );

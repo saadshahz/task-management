@@ -17,3 +17,17 @@
   background-position: center;
   background-repeat: no-repeat;
 }
+.topNav-serachBar {
+}
+.topNav-serachBar .ant-input-affix-wrapper {
+  border-color: var(--color-primary);
+}
+
+.topNav-serachBar .ant-btn {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-primary) !important;
+  padding: 10px;
+}
+.topNav-serachBar .ant-btn svg{
+  color: var(--color-light) !important   ;
+}
