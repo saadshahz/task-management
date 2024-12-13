@@ -7,7 +7,7 @@ export default function TopNav() {
   const onSearch = (value, _e, info) => console.log(info?.source, value);
 
   return (
-    <div className="p-4 flex justify-between items-center bg-[#f8f8f8] drop-shadow-sm">
+    <div className="p-4 flex justify-between items-center bg-[#f8f8f8] shadow">
       <div className="w-[50%]">
         <Search
           placeholder="input search text"
