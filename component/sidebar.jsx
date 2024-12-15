@@ -53,7 +53,7 @@ export default function Sidebar() {
     <div className="bg-black h-screen flex flex-col justify-between w-full p-4">
       <div>
         <div>
-          <h1 className="text-light text-formHeading text-center font-bold">
+          <h1 className="text-light lg:text-modalTitle  xl:text-formHeading text-center font-bold">
             <span className="text-primary">TASK</span> MANAGEMENT
           </h1>
         </div>

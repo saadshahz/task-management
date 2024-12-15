@@ -31,3 +31,21 @@
 .topNav-serachBar .ant-btn svg{
   color: var(--color-light) !important   ;
 }
+/* .tasklisting{
+  scrollbar-color: var(--color-primary) #dedede;
+  scrollbar-width: thin;
+  ;
+} */
+.tasklisting::-webkit-scrollbar {
+  width: 7px;               /* width of the entire scrollbar */
+}
+
+.tasklisting::-webkit-scrollbar-track {
+  background: #dedede;        /* color of the tracking area */
+}
+
+.tasklisting::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary);    /* color of the scroll thumb */
+  border-radius: 20px;       /* roundness of the scroll thumb */
+  border: 3px solid transparent;  /* creates padding around scroll thumb */
+}
