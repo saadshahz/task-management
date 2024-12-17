@@ -1,12 +1,20 @@
 "use client";
+import { signIn } from "next-auth/react";
 import { Button, Checkbox, Form, Input } from "antd";
 import Link from "next/link";
 
 export default function Login() {
   const [form] = Form.useForm();
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
+  const onFinish = async (credentials) => {
+
+    console.log("Clicked")
+    const result = await signIn("Credentials", {
+      email: credentials.email,
+      Password: credentials.password,
+      redirect: false,
+    });
+    console.log("Success:", result);
   };
 
   return (
@@ -50,16 +58,18 @@ export default function Login() {
             <Input.Password />
           </Form.Item>
           <div className="text-end">
-            <Link href={"/forgot-password"} className="text-primary hover:text-secondary">
+            <Link
+              href={"/forgot-password"}
+              className="text-primary hover:text-secondary"
+            >
               Forgot Password ?
             </Link>
           </div>
-          <Form.Item label={null} >
+          <Form.Item label={null}>
             <Button
               type="submit"
               className="bg-primary mt-4  w-full text-light"
               htmlType="submit"
-
             >
               Login
             </Button>
