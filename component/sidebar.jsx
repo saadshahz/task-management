@@ -8,13 +8,19 @@ import Icon, {
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Flex } from "antd";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { data, status } = useSession();
+  const [userData, setUserData] = useState(data.user);
 
-  console.log("pathname", pathname);
+  const handleLogout = async () => {
+    const response = await signOut({ redirect: true, callbackUrl: "/login" });
+  };
 
   const MenuItem = [
     {
@@ -39,12 +45,6 @@ export default function Sidebar() {
       title: "Settings",
       path: "/settings",
       icon: <SettingOutlined />,
-      isAllow: true,
-    },
-    {
-      title: "Logout",
-      path: "/login",
-      icon: <LoginOutlined className="rotate-180" />,
       isAllow: true,
     },
   ];
@@ -79,14 +79,27 @@ export default function Sidebar() {
                   );
                 }
               })}
+            <li className="pb-4 px-2">
+              <button
+                onClick={handleLogout}
+                className={
+                  "text-staffDetail font-semibold text-white  w-full p-2 block hover:text-primary text-left"
+                }
+              >
+                <span className="pr-2">
+                  <LoginOutlined className="rotate-180" />
+                </span>
+                {"Logout"}
+              </button>
+            </li>
           </ul>
         </div>
       </div>
 
       <div className="text-white border border-primary rounded py-2 px-4 flex justify-between items-center">
         <div className="">
-          <span className="block pb-1 font-bold">Amanuel</span>
-          <span>amanuecsacal@gmail.com</span>
+          <span className="block pb-1 font-bold">{userData.username}</span>
+          <span>{userData.email}</span>
         </div>
         <div>
           {/* <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" /> */}

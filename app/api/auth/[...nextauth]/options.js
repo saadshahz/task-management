@@ -11,33 +11,25 @@ const authOptions = {
 
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: "credentials",
       credentials: {
-        email: {
-          label: "Email",
-          type: "email",
-          placeholder: "Enter your email",
-        },
-        password: {
-          label: "Password",
-          type: "password",
-          placeholder: "Enter your password",
-        },
+        email: {label: "Email", type: "email", placeholder: "Enter your email",},
+        password: {label: "Password", type: "password", placeholder: "Enter your password",}
       },
       async authorize(credentials, req) {
-        // Add logic here to look up the user from the credentials supplied
 
-        const email = credentials?.email;
-        const password = credentials?.password;
+        const response = await fetch(`${process.env.NEXTAUTH_URL}/api/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+        });
 
-        const response = await loginPayload(email, password);
+        const user = await response.json();
 
-        const result = await response.json();
-
-        if (result?.data?.Login) {
-          return result.data.Login;
+        if (user?.success) {
+          return user.data;
         } else {
-          throw new Error(result?.errors[0]?.message);
+          throw new Error("Invalid Credentials");
         }
       },
     }),
