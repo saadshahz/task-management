@@ -1,23 +1,70 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Button, Form, Input } from "antd";
+import { Button, Col, Form, Input, Row , notification} from "antd";
+import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
+import { useState } from "react";
 
 export default function Register() {
   const router = useRouter();
-
+  const [api, contextHolder] = notification.useNotification();
+  const [isloading, setIsloading] = useState(false);
   const [form] = Form.useForm();
 
-  const onFinish = (formValues) => {
-    console.log("formValues : ", formValues);
+  const onFinish = async (formValues) => {
+    setIsloading(true);
+    const data = {
+      first_name: formValues.first_name,
+      last_name: formValues.last_name,
+      username: formValues.username,
+      email: formValues.email,
+      phone: formValues.phone,
+      password: formValues.password,
+    };
 
-    // localStorage.setItem('registerFormValues', JSON.stringify(formValues));
+    const response = await fetch(`http://localhost:3000/api/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-    // router.push('/salon/onboarding');
+    if (response.status == 200) {
+      setIsloading(false);
+      openNotificationWithIcon("success", `logged In Successfully`);
+      router.push("/login");
+    } else {
+      setIsloading(false);
+      openNotificationWithIcon("error", `${result.error}`);
+    }
+  };
+
+  const openNotificationWithIcon = (type, title) => {
+    api[type]({
+      duration: "2",
+      message: <div style={{ fontWeight: "bold" }}>{title}</div>,
+      description: (
+        <div style={{ fontWeight: "normal" }}>Lorem ipsum dolor semet</div>
+      ),
+      icon:
+        type === "error" ? (
+          <CloseCircleFilled
+            style={{
+              color: "#ff4d4f",
+            }}
+          />
+        ) : (
+          <CheckCircleFilled
+            style={{
+              color: "#95de64",
+            }}
+          />
+        ),
+    });
   };
 
   return (
     <>
       <div className="w-1/2 flex justify-center items-center">
+        {contextHolder}
         <div className="flex flex-col justify-center w-[70%]">
           <h1 className="text-formHeading text-primary text-left font-bold">
             REGISTER
@@ -32,33 +79,60 @@ export default function Register() {
             form={form}
             onFinish={onFinish}
           >
-            <Form.Item
-              required={false}
-              label="Full Name"
-              name="full_name"
-              colon={false}
-              className="mt-6 mb-4"
-              style={{ fontSize: "16px", fontWeight: "600" }}
-              validateTrigger="onSubmit"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your Name",
-                },
-              ]}
-            >
-              <Input
-                allowClear
-                placeholder="Enter Name"
-                style={{ fontSize: "12px", fontWeight: "400" }}
-              />
-            </Form.Item>
+            <Row className="justify-between">
+              <Col span={11}>
+                <Form.Item
+                  required={false}
+                  label="First Name"
+                  name="first_name"
+                  colon={false}
+                  className="mt-6 mb-4"
+                  style={{ fontSize: "16px", fontWeight: "600" }}
+                  validateTrigger="onSubmit"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your Name",
+                    },
+                  ]}
+                >
+                  <Input
+                    allowClear
+                    placeholder="Enter Name"
+                    style={{ fontSize: "12px", fontWeight: "400" }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={11}>
+                <Form.Item
+                  required={false}
+                  label="Last Name"
+                  name="last_name"
+                  colon={false}
+                  className="mt-6 mb-4"
+                  style={{ fontSize: "16px", fontWeight: "600" }}
+                  validateTrigger="onSubmit"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your Name",
+                    },
+                  ]}
+                >
+                  <Input
+                    allowClear
+                    placeholder="Enter Name"
+                    style={{ fontSize: "12px", fontWeight: "400" }}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
             <Form.Item
               required={false}
               label="Email"
               name="email"
               colon={false}
-              className="mt-6 mb-4"
+              className=""
               style={{ fontSize: "16px", fontWeight: "600" }}
               validateTrigger="onSubmit"
               rules={[
@@ -72,6 +146,51 @@ export default function Register() {
                 style={{ fontSize: "12px", fontWeight: "400" }}
               />
             </Form.Item>
+            <Row className="justify-between">
+              <Col span={11}>
+                {" "}
+                <Form.Item
+                  required={false}
+                  label="Username"
+                  name="username"
+                  colon={false}
+                  className=""
+                  style={{ fontSize: "16px", fontWeight: "600" }}
+                  validateTrigger="onSubmit"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your Name",
+                    },
+                  ]}
+                >
+                  <Input
+                    allowClear
+                    placeholder="Enter Name"
+                    style={{ fontSize: "12px", fontWeight: "400" }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={11}>
+                <Form.Item
+                  required={false}
+                  label="Phone"
+                  name="phone"
+                  colon={false}
+                  className=""
+                  style={{ fontSize: "16px", fontWeight: "600" }}
+                  validateTrigger="onSubmit"
+                  rules={[{ required: true, message: "Phone is required" }]}
+                >
+                  <Input
+                    allowClear
+                    placeholder="Enter Phone Number"
+                    style={{ fontSize: "12px", fontWeight: "400" }}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
             <Form.Item
               required={false}
               id="password"
@@ -80,7 +199,7 @@ export default function Register() {
               colon={false}
               style={{ fontSize: "16px", fontWeight: "600" }}
               validateTrigger="onSubmit"
-              className="mt-6 mb-4"
+              className=""
               rules={[
                 {
                   required: true,
@@ -94,6 +213,7 @@ export default function Register() {
                 style={{ fontSize: "12px", fontWeight: "400" }}
               />
             </Form.Item>
+
             <Form.Item
               required={false}
               id="confirm_password"
@@ -125,10 +245,12 @@ export default function Register() {
                 style={{ fontSize: "12px", fontWeight: "400" }}
               />
             </Form.Item>
+
             <Form.Item>
               <Button
                 className="login-form-button text-light  text-formLabel bg-primary "
                 htmlType="submit"
+                loading={isloading}
                 block
               >
                 CONTINUE

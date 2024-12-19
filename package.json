@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ant-design/charts": "^2.2.5",
+    "@ant-design/charts": "^2.2.1",
     "@ant-design/icons": "^5.5.2",
     "antd": "^5.22.3",
     "dotenv": "^16.4.7",
@@ -18,7 +18,8 @@
     "next": "15.0.4",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "eslint": "^8",
