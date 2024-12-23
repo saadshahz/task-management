@@ -39,7 +39,6 @@ export default function Login() {
 
   const onFinish = async (credentials) => {
     setIsloading(true);
-    console.log("Clicked");
 
     const result = await signIn("credentials", {
       email: credentials.email,
@@ -47,7 +46,7 @@ export default function Login() {
       redirect: false,
       callbackUrl: "/",
     });
-
+    console.log(result)
     if (result.status == 200) {
       openNotificationWithIcon("success", `logged In Successfully`);
       router.push("/dashboard");

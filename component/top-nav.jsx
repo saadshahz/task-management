@@ -7,7 +7,7 @@ export default function TopNav() {
   const { Search } = Input;
   const onSearch = (value, _e, info) => console.log(info?.source, value);
   const date = getDay();
-console.log("date :", date)
+  
   return (
     <div className="p-4 flex justify-between items-center bg-[#f8f8f8] shadow">
       <div className="w-[50%]">

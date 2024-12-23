@@ -2,10 +2,11 @@ import { Tiny } from '@ant-design/plots';
 import React from 'react';
 
 export default function RingChart(props) {
-
+    
     const { color, totalValue, obtainValue, title } = { ...props }
 
     const percent = obtainValue / totalValue;
+    const data = percent * 100
     const config = {
         percent,
         width: 120,
@@ -15,7 +16,7 @@ export default function RingChart(props) {
             {
                 type: 'text',
                 style: {
-                    text: `${percent * 100}%`,
+                    text: `${Math.floor(data)}%`,
                     x: '50%',
                     y: '50%',
                     textAlign: 'center',

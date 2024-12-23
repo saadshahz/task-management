@@ -1,11 +1,13 @@
 "use client";
-import getTask from "@/app/actions/getTask";
+import { getTask } from "@/app/actions/getTask";
+// import getTask from "@/app/actions/getTask";
 import CustomModal from "@/component/custom-modal";
 import RingChart from "@/component/ring-chart";
 import TaskCard from "@/component/taskCard";
 import {
   FileDoneOutlined,
   FileTextOutlined,
+  LoadingOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import {
@@ -20,6 +22,7 @@ import {
   Row,
   Upload,
 } from "antd";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 const { TextArea } = Input;
@@ -27,6 +30,8 @@ const { TextArea } = Input;
 export default function DashboardDetail() {
 
   const [tasks, setTasks] = useState();
+  const { data, status } = useSession();
+  const [userDate, setUserDate] = useState(data.user)
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [fileList, setFileList] = useState([]);
 
@@ -45,9 +50,20 @@ export default function DashboardDetail() {
     setIsOpenModal(false);
   };
   useEffect(() => {
-    const TaskData = getTask();
-    setTasks(TaskData);
+    getData()
+
   }, []);
+
+  const getData = async () => {
+
+    const TaskData = await getTask(userDate.user_id, userDate.accessToken);
+    setTasks(TaskData);
+  }
+
+  const completed = tasks ? tasks.filter((item) => item.status == 'completed') : [];
+  const notStarted = tasks ? tasks.filter((item) => item.status == 'notStarted') : [];
+  const inProgress = tasks ? tasks.filter((item) => item.status == 'inProgress') : [];
+
   return (
     <section className="">
       <Row className="justify-between">
@@ -76,17 +92,21 @@ export default function DashboardDetail() {
               gap="small"
               className="tasklisting overflow-y-scroll	h-[400px] py-2"
             >
-              {tasks &&
-                tasks.map((item, index) => {
-                  return (
-                    <div
-                      className=" xl:[48%] lg:w-[100%%] md:[100%] "
-                      key={index}
-                    >
-                      <TaskCard tasks={item} />
-                    </div>
-                  );
-                })}
+              {tasks != undefined ? (tasks.length > 0 ? tasks.map((item, index) => {
+                return (
+                  <div
+                    className="xl:[48%] lg:w-[100%%] md:[100%] "
+                    key={index}
+                  >
+                    <TaskCard tasks={item} />
+                  </div>
+                );
+              }) : <p className="text-center font-semibold" >No Task Register</p>) :
+
+                <LoadingOutlined style={{ fontSize: "3rem", fill: "var(--color-primary)" }} />
+
+
+              }
             </Flex>
           </div>
         </Col>
@@ -95,20 +115,20 @@ export default function DashboardDetail() {
             <div className="shadow rounded p-4 flex justify-between items-center">
               <RingChart
                 color={"rgb(21 128 61)"}
-                totalValue={100}
-                obtainValue={50}
+                totalValue={tasks?.length || 0}
+                obtainValue={completed.length}
                 title={"Completed"}
               />
               <RingChart
                 color={"rgb(220 38 38)"}
-                totalValue={100}
-                obtainValue={60}
+                totalValue={tasks?.length || 0}
+                obtainValue={notStarted.length}
                 title={"Not Started"}
               />
               <RingChart
                 color={"rgb(37 99 235 )"}
-                totalValue={100}
-                obtainValue={70}
+                totalValue={tasks?.length || 0}
+                obtainValue={inProgress.length}
                 title={"In Progress"}
               />
             </div>
@@ -123,17 +143,20 @@ export default function DashboardDetail() {
                 gap="small"
                 className="tasklisting overflow-y-scroll	h-[200px] py-2"
               >
-                {tasks &&
-                  tasks.map((item, index) => {
-                    return (
-                      <div
-                        className="xl:[48%] lg:w-[100%%] md:[100%] "
-                        key={index}
-                      >
-                        <TaskCard tasks={item} />
-                      </div>
-                    );
-                  })}
+
+                {tasks != undefined ? (tasks.length > 0 ? tasks.map((item, index) => {
+                  return (
+                    <div
+                      className="xl:[48%] lg:w-[100%%] md:[100%] "
+                      key={index}
+                    >
+                      <TaskCard tasks={item} />
+                    </div>
+                  );
+                }) : <p className="text-center font-semibold" >No Task Register</p>) :
+                  <LoadingOutlined style={{ fontSize: "3rem", fill: "var(--color-primary)" }} />
+                }
+
               </Flex>
             </div>
           </div>

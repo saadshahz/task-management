@@ -4,7 +4,7 @@ export default async function authUser(email, password) {
 
   const sqlQuery = `
   SELECT 
-    first_name, last_name, username, email, phone 
+    user_id, first_name, last_name, username, email, phone 
   FROM users WHERE 
     email = ? AND password = md5(?)
   ;`;

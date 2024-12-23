@@ -102,13 +102,15 @@ export default function Sidebar() {
           <span>{userData.email}</span>
         </div>
         <div>
-          {/* <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" /> */}
-          <Avatar
-            shape="rounded"
-            className="bg-secondary"
-            size={40}
-            icon={<UserOutlined />}
-          />
+          {userData.profile_image ?
+            <Avatar src={`${process.env.NEXTAUTH_URL}/${userData.profile_image}`} />
+            :
+            <Avatar
+              shape="rounded"
+              className="bg-secondary"
+              size={40}
+              icon={<UserOutlined />}
+            />}
         </div>
       </div>
     </div>
