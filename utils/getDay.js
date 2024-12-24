@@ -13,7 +13,7 @@ export default function getDay() {
 
   const data = {
     day: daysOfWeek[todayDate.getDay()],
-    date: `${todayDate.getDate()}/${todayDate.getMonth()}/${todayDate.getFullYear()}`,
+    date: `${todayDate.getDate()}/${todayDate.getMonth()+1}/${todayDate.getFullYear()}`,
   };
 
   return data;

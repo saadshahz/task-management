@@ -6,6 +6,8 @@ import taskImg from "../styles/images/demotask.jpg";
 import { Divider } from "antd";
 export default function TaskCard(props) {
   const { tasks } = props;
+  const createdOn = new Date(tasks.created_on);
+
   switch (tasks.status) {
     case "notStarted":
       tasks.status = "Not Started";
@@ -35,23 +37,22 @@ export default function TaskCard(props) {
 
   return (
     <Link
-      href={"#"}
+      href={`/my-task/${tasks.taskID}`}
       className="flex shadow rounded border border-transparent hover:border-primary hover:border items-start justify-start text-black hover:text-black p-4"
     >
       <div className="w-full">
         <div className="flex pb-2 justify-between items-center">
           <span
-            className={`block  rounded-full w-2 h-2 ${
-              tasks.status == "Completed"
+            className={`block  rounded-full w-2 h-2 ${tasks.status == "Completed"
                 ? "bg-green-700"
                 : tasks.status == "In Progress"
-                ? "bg-blue-600"
-                : "bg-red-600"
-            } `}
+                  ? "bg-blue-600"
+                  : "bg-red-600"
+              } `}
           ></span>
           <p>
             Created on
-            <span className="ml-4 font-semibold">{tasks.createdOn}</span>
+            <span className="ml-4 font-semibold">{`${createdOn.getDate()}-${createdOn.getMonth()+1}-${createdOn.getFullYear ()}`}</span>
           </p>
         </div>
         <Row>
@@ -74,13 +75,12 @@ export default function TaskCard(props) {
           <span className="text-formInput">
             Priority :{" "}
             <span
-              className={`ml-2 font-semibold ${
-                tasks.priority == "Low"
+              className={`ml-2 font-semibold ${tasks.priority == "Low"
                   ? "text-green-700"
                   : tasks.priority == "Moderate"
-                  ? "text-blue-600"
-                  : "text-red-600"
-              }`}
+                    ? "text-blue-600"
+                    : "text-red-600"
+                }`}
             >
               {tasks.priority}
             </span>
@@ -88,13 +88,12 @@ export default function TaskCard(props) {
           <p className="text-formInput">
             Status :{" "}
             <span
-              className={`ml-2 font-semibold ${
-                tasks.status == "Completed"
+              className={`ml-2 font-semibold ${tasks.status == "Completed"
                   ? "text-green-700"
                   : tasks.status == "In Progress"
-                  ? "text-blue-600"
-                  : "text-red-600"
-              }`}
+                    ? "text-blue-600"
+                    : "text-red-600"
+                }`}
             >
               {tasks.status}
             </span>

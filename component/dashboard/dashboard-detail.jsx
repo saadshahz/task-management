@@ -1,10 +1,13 @@
 "use client";
+import { addNewTask } from "@/app/actions/addNewTask";
 import { getTask } from "@/app/actions/getTask";
 // import getTask from "@/app/actions/getTask";
 import CustomModal from "@/component/custom-modal";
 import RingChart from "@/component/ring-chart";
 import TaskCard from "@/component/taskCard";
 import {
+  CheckCircleFilled,
+  CloseCircleFilled,
   FileDoneOutlined,
   FileTextOutlined,
   LoadingOutlined,
@@ -20,7 +23,7 @@ import {
   Modal,
   Radio,
   Row,
-  Upload,
+  Upload, notification
 } from "antd";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -31,8 +34,15 @@ export default function DashboardDetail() {
 
   const [tasks, setTasks] = useState();
   const { data, status } = useSession();
+  const [api, contextHolder] = notification.useNotification();
+  const [isloading, setIsloading] = useState(false)
   const [userDate, setUserDate] = useState(data.user)
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [startDate, setStartDate] = useState()
+  const [endDate, setEndDate] = useState()
+  const [completedTask, setCompletedTask] = useState([])
+  const [notStartedTask, setNotStartedTask] = useState([])
+  const [inProgressTask, setInProgressTask] = useState([])
   const [fileList, setFileList] = useState([]);
 
   const [form] = Form.useForm();
@@ -44,28 +54,74 @@ export default function DashboardDetail() {
   const handleCloseModal = () => {
     setIsOpenModal(false);
   };
-  const handleSubmit = (values) => {
-    console.log("values :", values);
+  const handleSubmit = async (formData) => {
+    setIsloading(true);
+    const data = {
+      userId: userDate.user_id,
+      name: formData?.name,
+      priority: formData?.priority,
+      status: 'notStarted',
+      image: null,
+      description: formData?.description,
+      start_date: startDate,
+      end_date: endDate
+    }
 
-    setIsOpenModal(false);
+    const response = await addNewTask(data, userDate.accessToken);
+    if (response.success) {
+      getData()
+      setIsOpenModal(false);
+      setIsloading(false);
+      openNotificationWithIcon("success", `Add new Task Successfully`);
+      router.push("/login");
+    } else {
+      setIsOpenModal(false);
+      setIsloading(false);
+
+      openNotificationWithIcon("error", `${response.error}`);
+    }
+
   };
   useEffect(() => {
-    getData()
-
+    getData();
   }, []);
 
   const getData = async () => {
 
     const TaskData = await getTask(userDate.user_id, userDate.accessToken);
     setTasks(TaskData);
-  }
 
-  const completed = tasks ? tasks.filter((item) => item.status == 'completed') : [];
-  const notStarted = tasks ? tasks.filter((item) => item.status == 'notStarted') : [];
-  const inProgress = tasks ? tasks.filter((item) => item.status == 'inProgress') : [];
+    setCompletedTask(TaskData.filter((item) => item.status == 'completed'))
+    setNotStartedTask(TaskData.filter((item) => item.status == 'notStarted'))
+    setInProgressTask(TaskData.filter((item) => item.status == 'inProgress'))
+  }
+  const openNotificationWithIcon = (type, title) => {
+    api[type]({
+      duration: "2",
+      message: <div style={{ fontWeight: "bold" }}>{title}</div>,
+      description: (
+        <div style={{ fontWeight: "normal" }}>Lorem ipsum dolor semet</div>
+      ),
+      icon:
+        type === "error" ? (
+          <CloseCircleFilled
+            style={{
+              color: "#ff4d4f",
+            }}
+          />
+        ) : (
+          <CheckCircleFilled
+            style={{
+              color: "#95de64",
+            }}
+          />
+        ),
+    });
+  };
 
   return (
     <section className="">
+      {contextHolder}
       <Row className="justify-between">
         <Col span={14} className="pr-4">
           <div className="shadow rounded p-4">
@@ -116,19 +172,19 @@ export default function DashboardDetail() {
               <RingChart
                 color={"rgb(21 128 61)"}
                 totalValue={tasks?.length || 0}
-                obtainValue={completed.length}
+                obtainValue={completedTask.length}
                 title={"Completed"}
               />
               <RingChart
                 color={"rgb(220 38 38)"}
                 totalValue={tasks?.length || 0}
-                obtainValue={notStarted.length}
+                obtainValue={notStartedTask.length}
                 title={"Not Started"}
               />
               <RingChart
                 color={"rgb(37 99 235 )"}
                 totalValue={tasks?.length || 0}
-                obtainValue={inProgress.length}
+                obtainValue={inProgressTask.length}
                 title={"In Progress"}
               />
             </div>
@@ -144,7 +200,7 @@ export default function DashboardDetail() {
                 className="tasklisting overflow-y-scroll	h-[200px] py-2"
               >
 
-                {tasks != undefined ? (tasks.length > 0 ? tasks.map((item, index) => {
+                {completedTask != undefined ? (completedTask.length > 0 ? completedTask.map((item, index) => {
                   return (
                     <div
                       className="xl:[48%] lg:w-[100%%] md:[100%] "
@@ -208,7 +264,9 @@ export default function DashboardDetail() {
                       { required: true, message: "Please Enter Start Date" },
                     ]}
                   >
-                    <DatePicker className="w-full" />
+                    <DatePicker className="w-full" onChange={(date, dateString) => {
+                      setStartDate(dateString)
+                    }} />
                   </Form.Item>
                 </Col>
                 <Col span={12} className="pr-4">
@@ -224,7 +282,9 @@ export default function DashboardDetail() {
                       { required: true, message: "Please Enter End Date" },
                     ]}
                   >
-                    <DatePicker className="w-full" />
+                    <DatePicker className="w-full" onChange={(date, dateString, event) => {
+                      setEndDate(dateString)
+                    }} />
                   </Form.Item>
                 </Col>
                 <Col span={12} className="pr-4">
@@ -237,9 +297,9 @@ export default function DashboardDetail() {
                     className="mt-3 mb-2 w-full"
                     style={{ fontSize: "16px", fontWeight: "600" }}
                     validateTrigger="onSubmit"
-                    rules={[
-                      { required: true, message: "Please Upload Picture" },
-                    ]}
+                  // rules={[
+                  //   { required: true, message: "Please Upload Picture" },
+                  // ]}
                   >
                     <Upload
                       action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
@@ -316,6 +376,7 @@ export default function DashboardDetail() {
                     <Button
                       type="primary"
                       htmlType="submit"
+                      loading={isloading}
                       inline="true"
                       className=" mt-4 bg-primary text-formLabel hover:bg-secondary "
                     >

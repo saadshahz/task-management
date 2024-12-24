@@ -1,3 +1,4 @@
+import TaskListing from '@/component/task/taskListing';
 import React from 'react'
 
 export const metadata = {
@@ -6,6 +7,6 @@ export const metadata = {
 
 export default function MyTask() {
     return (
-        <div>My Task</div>
+        <TaskListing />
     )
 }
