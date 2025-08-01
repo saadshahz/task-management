@@ -1,10 +1,12 @@
 "use client";
+import { addNewMedia } from "@/app/actions/addNewMedia";
 import { addNewTask } from "@/app/actions/addNewTask";
 import { getTask } from "@/app/actions/getTask";
 // import getTask from "@/app/actions/getTask";
 import CustomModal from "@/component/custom-modal";
 import RingChart from "@/component/ring-chart";
 import TaskCard from "@/component/taskCard";
+import uploader from "@/utils/uploader";
 import {
   CheckCircleFilled,
   CloseCircleFilled,
@@ -30,6 +32,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 const { TextArea } = Input;
+const { RangePicker } = DatePicker;
 
 export default function DashboardDetail() {
   const [tasks, setTasks] = useState();
@@ -55,7 +58,17 @@ export default function DashboardDetail() {
     setIsOpenModal(false);
   };
   const handleSubmit = async (formData) => {
+    const fileData = {
+      file_name: fileList[0].name,
+      file_path: `/uploads/${Date.now()}-${fileList[0].name}`,
+      file_type: fileList[0].type,
+      file_size: fileList[0].size,
+    };
+
+    const medaiResponse = addNewMedia(fileData, userDate.accessToken);
+    console.log("response :", medaiResponse.json());
     setIsloading(true);
+  
     const data = {
       userId: userDate.user_id,
       name: formData?.name,
@@ -66,20 +79,22 @@ export default function DashboardDetail() {
       start_date: startDate,
       end_date: endDate,
     };
+    console.log("data :", data);
+    setIsloading(false);
+    setIsOpenModal(false);
+    // const response = await addNewTask(data, userDate.accessToken);
+    // if (response.success) {
+    //   getData();
+    //   setIsOpenModal(false);
+    //   setIsloading(false);
+    //   openNotificationWithIcon("success", `New Task Added`);
+    //   router.push("/login");
+    // } else {
+    //   setIsOpenModal(false);
+    //   setIsloading(false);
 
-    const response = await addNewTask(data, userDate.accessToken);
-    if (response.success) {
-      getData();
-      setIsOpenModal(false);
-      setIsloading(false);
-      openNotificationWithIcon("success", `Add new Task Successfully`);
-      router.push("/login");
-    } else {
-      setIsOpenModal(false);
-      setIsloading(false);
-
-      openNotificationWithIcon("error", `${response.error}`);
-    }
+    //   openNotificationWithIcon("error", `${response.error}`);
+    // }
   };
   useEffect(() => {
     getData();
@@ -118,11 +133,6 @@ export default function DashboardDetail() {
     });
   };
 
-  const date = new Date();
-  const today = `${date.getFullYear()}-0${date.getMonth() + 1}-${date.getDate()}`;
-  console.log("Date :", today);
-
-
   return (
     <section className="">
       {contextHolder}
@@ -133,6 +143,8 @@ export default function DashboardDetail() {
               <p className="text-primary text-staffDetail font-semibold">
                 <FileTextOutlined className="mr-2" />
                 To-Do
+                {/* {fileList && fileList} */}
+                {/* {fileList && fileList.} */}
               </p>
               <div>
                 <Button
@@ -268,10 +280,10 @@ export default function DashboardDetail() {
                     />
                   </Form.Item>
                 </Col>
-                <Col span={12} className="pr-4">
+                <Col span={24} className="pr-4">
                   <Form.Item
                     required={false}
-                    label="Start Date"
+                    label="Start/End Date"
                     name="start-date"
                     colon={false}
                     className="mt-3 mb-2 w-full"
@@ -281,35 +293,12 @@ export default function DashboardDetail() {
                       { required: true, message: "Please Enter Start Date" },
                     ]}
                   >
-                    <DatePicker
+                    <RangePicker
                       className="w-full"
-                      minDate={'2025-02-17'} // dayjs("2019-08-01", dateFormat)
                       format="YYYY-MM-DD"
-                      onChange={(date, dateString) => {
-                        setStartDate(dateString);
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12} className="pr-4">
-                  <Form.Item
-                    required={false}
-                    label="End Date"
-                    name="end-date"
-                    colon={false}
-                    className="mt-3 mb-2 w-full"
-                    style={{ fontSize: "16px", fontWeight: "600" }}
-                    validateTrigger="onSubmit"
-                    rules={[
-                      { required: true, message: "Please Enter End Date" },
-                    ]}
-                  >
-                    <DatePicker
-                      className="w-full"
-                      minDate={'2025-02-17'}
-                      format="YYYY-MM-DD"
-                      onChange={(date, dateString, event) => {
-                        setEndDate(dateString);
+                      onChange={(value, dateString) => {
+                        setStartDate(dateString[0]);
+                        setEndDate(dateString[1]);
                       }}
                     />
                   </Form.Item>
@@ -329,10 +318,10 @@ export default function DashboardDetail() {
                     // ]}
                   >
                     <Upload
-                      action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
+                      // action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
                       listType="picture-card"
                       fileList={fileList}
-                      onChange={handleFileChange}
+                      onChange={handleFileChange} // handleFileChange
                     >
                       {fileList.length >= 1 ? null : (
                         <button
